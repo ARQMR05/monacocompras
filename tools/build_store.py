@@ -1,6 +1,6 @@
 # Tienda pública independiente para monacocompras.com: solo la tienda (sin caja, sin datos privados).
 # Uso: python3 build_store.py <artifact.html> <salida/index.html>
-# Las fotos (data: URI en el catálogo) se guardan como archivos en <salida>/fotos/ y el catálogo apunta a ellas.
+# Las fotos (data: URI en el catálogo) se guardan como archivos en fotos/ del repo (junto a tools/) y el catálogo apunta a ellas.
 import re, sys, json, html, base64, hashlib, os
 src = open(sys.argv[1], encoding='utf-8').read()
 def blk(i, t='script'):
@@ -9,7 +9,7 @@ def blk(i, t='script'):
     return m.group(1)
 cat = json.loads(blk('catalog-data'))
 cat['enlace'] = 'https://monacocompras.com/'
-fdir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), 'fotos'); os.makedirs(fdir, exist_ok=True)
+fdir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'fotos'); os.makedirs(fdir, exist_ok=True)
 EXT = {'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif'}
 usadas = set()
 for tienda in cat.get('tiendas') or []:
