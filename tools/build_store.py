@@ -1,7 +1,7 @@
 # Tienda pública independiente para monacocompras.com: solo la tienda (sin caja, sin datos privados).
 # Uso: python3 build_store.py <artifact.html> <salida/index.html>
 # Las fotos (data: URI en el catálogo) se guardan como archivos en fotos/ del repo (junto a tools/) y el catálogo apunta a ellas.
-import re, sys, json, html, base64, hashlib, os
+import re, sys, json, html, base64, hashlib, os, subprocess
 src = open(sys.argv[1], encoding='utf-8').read()
 def blk(i, t='script'):
     m = re.search(rf'<{t} id="{i}"[^>]*>(.*?)</{t}>', src, re.S)
@@ -55,4 +55,7 @@ head = f'''<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name
 }})();
 </script></body></html>'''
 open(sys.argv[2], 'w', encoding='utf-8').write(head)
+# Deja las fotos listas en git para que el commit de la sincronización las incluya.
+if os.path.isdir(os.path.join(os.path.dirname(fdir), '.git')):
+    subprocess.run(['git', '-C', os.path.dirname(fdir), 'add', '-A', 'fotos'], check=False)
 print('store', len(head), 'bytes,', len(t.get('productos', [])), 'productos,', len(usadas), 'fotos')
