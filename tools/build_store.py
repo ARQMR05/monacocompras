@@ -12,9 +12,13 @@ cat['enlace'] = 'https://monacocompras.com/'
 fdir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'fotos'); os.makedirs(fdir, exist_ok=True)
 EXT = {'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif'}
 usadas = set()
+# Fotos mejoradas (código de producto → archivo en fotos-mejoradas/): reemplazan la foto del catálogo.
+mj = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fotos_mejoradas.json')
+mejoradas = json.load(open(mj, encoding='utf-8')) if os.path.exists(mj) else {}
 for tienda in cat.get('tiendas') or []:
     for p in tienda.get('productos') or []:
         p.pop('fid', None)
+        if mejoradas.get(p.get('c')): p['foto'] = mejoradas[p['c']]; continue
         m = re.match(r'data:(image/[\w+.-]+);base64,(.*)$', (p.get('foto') or '').strip(), re.S)
         if not m: continue
         raw = base64.b64decode(m.group(2))
