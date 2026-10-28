@@ -31,6 +31,12 @@ for f in os.listdir(fdir):
 t = (cat.get('tiendas') or [{}])[0]
 name = (t.get('nombre') or 'Tienda').strip(); desc = (t.get('slogan') or '').strip()
 icon = ((t.get('logo') or {}).get('icono') or '')
+# Sello del encabezado (tools/logo-sello.svg) en lugar del ícono guardado en la caja, y más grande.
+sello = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logo-sello.svg')
+sello_css = ''
+if os.path.exists(sello):
+    t['logo'] = dict(t.get('logo') or {}, icono='data:image/svg+xml;base64,' + base64.b64encode(open(sello, 'rb').read()).decode())
+    sello_css = '.sf-mark.sf-mark-img{width:200px;height:200px;border-radius:999px;box-shadow:0 6px 22px rgba(91,42,110,.28)}@media (max-width:640px){.sf-mark.sf-mark-img{width:132px;height:132px}}'
 sf_css, sf_js = blk('sf-css', 'style'), blk('sf-js')
 app_css = blk('app-css', 'style'); tokens = app_css[:app_css.index('\n* { box-sizing')] + '\nbody { background: var(--bg); color: var(--ink); font-family: var(--body); }\n'
 catj = json.dumps(cat, ensure_ascii=False).replace('<', '\\u003c')
@@ -42,7 +48,7 @@ head = f'''<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name
 <link rel="icon" href="icon.png"><link rel="apple-touch-icon" href="icon.png"><meta name="theme-color" content="{e(t.get('color') or '#5b2a6e')}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>:root{{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}}body{{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}}img{{max-width:100%}}[hidden]{{display:none!important}}</style>
-<style>{tokens}</style><style>{sf_css}</style></head><body><div id="store"></div>
+<style>{tokens}</style><style>{sf_css}{sello_css}</style></head><body><div id="store"></div>
 <script id="catalog-data" type="application/json">{catj}</script>
 <script>{sf_js}</script>
 <script>
